@@ -1,0 +1,24 @@
+# RouteWise city network.  Formats:  LOC|name   and   ROAD|from|to|distance_km
+LOC|Warehouse
+LOC|City Center
+LOC|University
+LOC|Hospital
+LOC|Airport
+LOC|Railway Station
+LOC|Industrial Area
+LOC|Residential Area
+LOC|Stadium
+ROAD|Warehouse|City Center|4
+ROAD|Warehouse|Industrial Area|6
+ROAD|Warehouse|Railway Station|7
+ROAD|City Center|University|5
+ROAD|City Center|Hospital|3
+ROAD|City Center|Railway Station|6
+ROAD|University|Airport|9
+ROAD|University|Hospital|4
+ROAD|Hospital|Residential Area|5
+ROAD|Railway Station|Industrial Area|3
+ROAD|Railway Station|Residential Area|8
+ROAD|Airport|Residential Area|7
+ROAD|Stadium|University|3
+ROAD|Stadium|Residential Area|7

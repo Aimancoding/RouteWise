@@ -1,0 +1,6 @@
+# id|name|phone|address
+1|Ali Khan|0300-1111111|House 5, Gulshan
+2|Sara Ahmed|0321-2222222|Flat 9, DHA
+3|Bilal Hussain|0333-3333333|Street 12, Clifton
+4|Ayesha Malik|0345-4444444|Block C, North Nazimabad
+5|Usman Tariq|0311-5555555|Plot 7, Korangi
