@@ -88,6 +88,9 @@ public:
 
     int size() const { return count; }
 
+    // i-th customer (0 .. size()-1), or nullptr. Used when saving to file.
+    Customer* getAt(int i) const { return (i >= 0 && i < count) ? data[i] : nullptr; }
+
     void displayAll(std::ostream& os = std::cout) const {
         if (count == 0) { os << "No customers registered.\n"; return; }
         for (int i = 0; i < count; ++i) data[i]->display(os);
