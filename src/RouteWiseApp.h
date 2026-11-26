@@ -32,6 +32,7 @@ private:
     DispatchManager  dispatch;
     Graph            city;
     int              nextTrackingNo;
+    std::string      dataDir;       // folder used for loading AND saving
 
     // ------------------------------------------------------------ input
     static std::string ask(const std::string& prompt) {
@@ -177,6 +178,44 @@ private:
         return n;
     }
 
+    // ------------------------------------------------------- file saving
+    static std::string clean(const std::string& s) {      // '|' is our separator
+        std::string r = s;
+        for (size_t i = 0; i < r.length(); ++i) if (r[i] == '|') r[i] = '/';
+        return r;
+    }
+
+    // Rewrites customers.txt, parcels.txt and network.txt in dataDir.
+    // (Delivery status / queues are not saved: parcels reload as Registered.)
+    void saveAll() {
+        std::ofstream c((dataDir + "/customers.txt").c_str());
+        std::ofstream p((dataDir + "/parcels.txt").c_str());
+        std::ofstream n((dataDir + "/network.txt").c_str());
+        if (!c || !p || !n) {
+            std::cout << "  (warning: could not save to folder '" << dataDir << "')\n";
+            return;
+        }
+        c << "# id|name|phone|address\n";
+        for (int i = 0; i < customers.size(); ++i) {
+            Customer* cu = customers.getAt(i);
+            c << cu->getID() << "|" << clean(cu->getName()) << "|"
+              << clean(cu->getPhone()) << "|" << clean(cu->getAddress()) << "\n";
+        }
+        p << "# tracking|customerID|source|destination|weight_kg|priority(1-5)\n";
+        parcels.forEach([&](Parcel* pa) {
+            p << pa->getTrackingID() << "|" << pa->getCustomerID() << "|"
+              << clean(pa->getSource()) << "|" << clean(pa->getDestination()) << "|"
+              << pa->getWeight() << "|" << pa->getPriority() << "\n";
+        });
+        n << "# LOC|name   and   ROAD|from|to|distance_km\n";
+        for (int i = 0; i < city.getVertexCount(); ++i) n << "LOC|" << clean(city.getName(i)) << "\n";
+        for (int i = 0; i < city.getVertexCount(); ++i)
+            for (int j = i + 1; j < city.getVertexCount(); ++j)
+                if (city.roadWeight(i, j) > 0)
+                    n << "ROAD|" << clean(city.getName(i)) << "|" << clean(city.getName(j))
+                      << "|" << city.roadWeight(i, j) << "\n";
+    }
+
     // ----------------------------------------------------------- menu actions
     void registerCustomer() {
         int id = askInt("Customer ID: ", 1, 999999999);
@@ -185,7 +224,8 @@ private:
         std::string phone = askNonEmpty("Phone: ");
         std::string addr  = askNonEmpty("Address: ");
         customers.addCustomer(id, name, phone, addr);
-        std::cout << "  Customer registered.\n";
+        saveAll();
+        std::cout << "  Customer registered and saved.\n";
     }
 
     void registerParcel() {
@@ -202,7 +242,7 @@ private:
 
         std::string err;
         Parcel* p = new Parcel(tid, cid, city.getName(s), city.getName(d), w, pr);
-        if (storeParcel(p, err)) std::cout << "  Parcel registered with tracking ID " << tid << ".\n";
+        if (storeParcel(p, err)) { saveAll(); std::cout << "  Parcel registered and saved with tracking ID " << tid << ".\n"; }
         else std::cout << "  Failed: " << err << "\n";
     }
 
@@ -264,7 +304,8 @@ private:
         if (c == 1) city.displayNetwork();
         else if (c == 2) {
             std::string n = askNonEmpty("New location name: ");
-            std::cout << (city.addLocation(n) >= 0 ? "  Location added.\n" : "  Location already exists.\n");
+            if (city.addLocation(n) >= 0) { saveAll(); std::cout << "  Location added and saved.\n"; }
+            else std::cout << "  Location already exists.\n";
         } else {
             if (city.getVertexCount() < 2) { std::cout << "  Need at least two locations.\n"; return; }
             city.displayLocations();
@@ -272,6 +313,7 @@ private:
             if (a == b) { std::cout << "  A road needs two different locations.\n"; return; }
             int w = askInt("Distance (km): ", 1, 1000000);
             city.addRoad(a, b, w);
+            saveAll();
             std::cout << "  Road saved.\n";
         }
     }
@@ -340,9 +382,10 @@ private:
     }
 
 public:
-    RouteWiseApp() : parcels(31), nextTrackingNo(1) {}
+    RouteWiseApp() : parcels(31), nextTrackingNo(1), dataDir("data") {}
 
     void loadData(const std::string& dir) {
+        dataDir = dir;
         std::cout << "Loading data from '" << dir << "' ...\n";
         int n = loadNetwork(dir + "/network.txt");
         if (n >= 0) std::cout << "  network : " << city.getVertexCount() << " locations, "
