@@ -1,13 +1,13 @@
 # tracking|customerID|source|destination|weight_kg|priority(1-5)
+TRK0010|5|Warehouse|Hospital|1|3
 TRK0001|1|Warehouse|Airport|2.5|1
 TRK0002|2|Warehouse|Hospital|1.2|5
-TRK0003|3|Warehouse|University|4.0|2
+TRK0003|3|Warehouse|University|4|2
 TRK0004|1|Warehouse|Residential Area|0.8|5
 TRK0005|4|Warehouse|Stadium|6.3|3
 TRK0006|5|Warehouse|Railway Station|3.1|1
-TRK0007|2|Warehouse|Industrial Area|9.0|4
+TRK0007|2|Warehouse|Industrial Area|9|4
 TRK0008|3|Warehouse|City Center|0.5|1
 TRK0009|4|Warehouse|Airport|2.2|4
-TRK0010|5|Warehouse|Hospital|1.0|3
-TRK0011|1|Warehouse|University|2.0|2
+TRK0011|1|Warehouse|University|2|2
 TRK0012|2|Warehouse|Stadium|5.5|1
